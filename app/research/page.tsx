@@ -119,6 +119,15 @@ export default function Research() {
               <span className="text-sm text-gray-500">2026</span>
             </div>
           </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
+                <p className="text-gray-600">European Chapter of the Association for Computational Linguistics (EACL)</p>
+              </div>
+              <span className="text-sm text-gray-500">2026</span>
+            </div>
+          </div>
         </div>
       </div>
 
