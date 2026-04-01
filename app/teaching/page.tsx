@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Teaching() {
   const upcomingCourses = [
     {
@@ -75,6 +77,31 @@ export default function Teaching() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Teaching Tools */}
+      <div className="mb-16">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Teaching Tools</h2>
+        <p className="text-gray-600 mb-6">
+          Interactive web apps to help students explore and practice core concepts.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link
+            href="/teaching/tools/binary-numbers"
+            className="group bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-400 transition-all duration-200"
+          >
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">Binary Numbers</h3>
+            <p className="text-sm text-gray-600">Toggle bits to learn how binary maps to decimal values.</p>
+            <span className="inline-block mt-3 text-sm text-gray-500 group-hover:text-gray-700 transition-colors">
+              Open tool →
+            </span>
+          </Link>
+        </div>
+        <div className="mt-4">
+          <Link href="/teaching/tools" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+            View all tools →
+          </Link>
         </div>
       </div>
 

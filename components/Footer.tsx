@@ -34,6 +34,9 @@ export default function Footer() {
               <Link href="/teaching" className="block text-gray-600 hover:text-gray-900 transition-colors">
                 Teaching
               </Link>
+              <Link href="/teaching/tools" className="block text-gray-600 hover:text-gray-900 transition-colors">
+                Teaching Tools
+              </Link>
               <Link href="/apps" className="block text-gray-600 hover:text-gray-900 transition-colors">
                 Mobile Apps
               </Link>
