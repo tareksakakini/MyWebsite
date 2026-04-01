@@ -88,11 +88,11 @@ export default function Teaching() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link
-            href="/teaching/tools/binary-numbers"
+            href="/teaching/tools/number-bases"
             className="group bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-400 transition-all duration-200"
           >
-            <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">Binary Numbers</h3>
-            <p className="text-sm text-gray-600">Toggle bits to learn how binary maps to decimal values.</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">Number Bases</h3>
+            <p className="text-sm text-gray-600">Explore binary, octal, hex, and more — see how positional notation works.</p>
             <span className="inline-block mt-3 text-sm text-gray-500 group-hover:text-gray-700 transition-colors">
               Open tool →
             </span>
