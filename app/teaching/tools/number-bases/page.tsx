@@ -119,8 +119,17 @@ function digitsToDecimal(digits: number[], base: number): number {
 const AVAILABLE_BASES = [2, 3, 4, 5, 8, 10, 16];
 const DIGIT_COUNT_OPTIONS = [4, 8];
 
+type ToolTab = 'explorer' | 'converter' | 'arithmetic' | 'quiz';
+const TOOL_TABS: { id: ToolTab; label: string }[] = [
+  { id: 'explorer', label: 'Explorer' },
+  { id: 'converter', label: 'Converter' },
+  { id: 'arithmetic', label: 'Arithmetic' },
+  { id: 'quiz', label: 'Quiz' },
+];
+
 export default function NumberBases() {
   const [base, setBase] = useState(2);
+  const [activeTab, setActiveTab] = useState<ToolTab>('explorer');
   const [digitCount, setDigitCount] = useState(8);
   const [digits, setDigits] = useState<number[]>(() => Array(8).fill(0));
 
@@ -255,117 +264,143 @@ export default function NumberBases() {
         </div>
       </div>
 
-      {/* Digit-count selector */}
+      {/* Tool tab selector */}
       <div className="mb-8">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Number of digits</label>
-        <div className="flex gap-2">
-          {DIGIT_COUNT_OPTIONS.map(n => (
+        <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-0">
+          {TOOL_TABS.map(tab => (
             <button
-              key={n}
-              onClick={() => handleDigitCountChange(n)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                digitCount === n
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-sm font-medium rounded-t-md transition-colors -mb-px ${
+                activeTab === tab.id
+                  ? 'bg-white border border-gray-200 border-b-white text-gray-900'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {n} digits
+              {tab.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Interactive digit controls */}
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 sm:p-8 mb-6">
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8">
-          {digits.map((digit, i) => {
-            const position = digits.length - 1 - i;
-            return (
-              <DigitControl
-                key={i}
-                position={position}
-                digit={digit}
-                base={base}
-                onChange={handleDigitChange}
-              />
-            );
-          })}
-        </div>
-
-        {/* Decimal result */}
-        <div className="text-center">
-          <p className="text-sm text-gray-500 mb-1">Decimal (Base-10) Value</p>
-          <p className="text-5xl font-bold text-gray-900">{decimalValue}</p>
-          <p className="text-sm text-gray-400 mt-2 font-mono">
-            {prefix}{digits.map(d => digitToDisplay(d)).join('')}
-            <sub>{base}</sub> = {decimalValue}<sub>10</sub>
-          </p>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex gap-3 mb-12">
-        <button
-          onClick={resetDigits}
-          className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-        >
-          Reset
-        </button>
-        <button
-          onClick={setRandomValue}
-          className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-        >
-          Random
-        </button>
-      </div>
-
-      {/* How it works */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">How {baseName} (Base-{base}) Works</h2>
-        <div className="prose prose-gray max-w-none text-gray-600 space-y-4">
-          <p>
-            {baseName} is a <strong>base-{base}</strong> number system that uses {base} digits:{' '}
-            <strong>{Array.from({ length: base }, (_, i) => digitToDisplay(i)).join(', ')}</strong>.
-            Each digit position represents a power of {base}, starting
-            from {base}<sup>0</sup> on the right.
-          </p>
-          <p>
-            To convert to decimal, multiply each digit by its place value and add them up:
-          </p>
-          <div className="bg-gray-50 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-            <p>{exampleDigits.map(d => digitToDisplay(d)).join('  ')} ({baseName.toLowerCase()})</p>
-            <p>
-              ={' '}
-              {exampleDigits
-                .map((d, i) => `${digitToDisplay(d)}×${base}${superscript(exampleDigits.length - 1 - i)}`)
-                .join(' + ')}
-            </p>
-            <p>
-              ={' '}
-              {exampleDigits
-                .map((d, i) => d * Math.pow(base, exampleDigits.length - 1 - i))
-                .join(' + ')}
-            </p>
-            <p>
-              = <strong>{exampleDecimal}</strong> (decimal)
-            </p>
+      {activeTab === 'explorer' && (
+        <>
+          {/* Digit-count selector */}
+          <div className="mb-8">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Number of digits</label>
+            <div className="flex gap-2">
+              {DIGIT_COUNT_OPTIONS.map(n => (
+                <button
+                  key={n}
+                  onClick={() => handleDigitCountChange(n)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    digitCount === n
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {n} digits
+                </button>
+              ))}
+            </div>
           </div>
-          <p>
-            With <strong>{digitCount} digits</strong> in base {base}, you can represent values
-            from <strong>0</strong> to{' '}
-            <strong>{(Math.pow(base, digitCount) - 1).toLocaleString()}</strong>{' '}
-            ({Math.pow(base, digitCount).toLocaleString()} unique values).
-          </p>
-        </div>
-      </div>
 
-      {/* Decimal-to-Base Division Converter */}
-      <DivisionConverter key={base} base={base} />
+          {/* Interactive digit controls */}
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 sm:p-8 mb-6">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8">
+              {digits.map((digit, i) => {
+                const position = digits.length - 1 - i;
+                return (
+                  <DigitControl
+                    key={i}
+                    position={position}
+                    digit={digit}
+                    base={base}
+                    onChange={handleDigitChange}
+                  />
+                );
+              })}
+            </div>
 
-      {/* Base Arithmetic */}
-      <BaseArithmetic key={base} base={base} />
+            {/* Decimal result */}
+            <div className="text-center">
+              <p className="text-sm text-gray-500 mb-1">Decimal (Base-10) Value</p>
+              <p className="text-5xl font-bold text-gray-900">{decimalValue}</p>
+              <p className="text-sm text-gray-400 mt-2 font-mono">
+                {prefix}{digits.map(d => digitToDisplay(d)).join('')}
+                <sub>{base}</sub> = {decimalValue}<sub>10</sub>
+              </p>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex gap-3 mb-12">
+            <button
+              onClick={resetDigits}
+              className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Reset
+            </button>
+            <button
+              onClick={setRandomValue}
+              className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Random
+            </button>
+          </div>
+
+          {/* How it works */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">How {baseName} (Base-{base}) Works</h2>
+            <div className="prose prose-gray max-w-none text-gray-600 space-y-4">
+              <p>
+                {baseName} is a <strong>base-{base}</strong> number system that uses {base} digits:{' '}
+                <strong>{Array.from({ length: base }, (_, i) => digitToDisplay(i)).join(', ')}</strong>.
+                Each digit position represents a power of {base}, starting
+                from {base}<sup>0</sup> on the right.
+              </p>
+              <p>
+                To convert to decimal, multiply each digit by its place value and add them up:
+              </p>
+              <div className="bg-gray-50 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                <p>{exampleDigits.map(d => digitToDisplay(d)).join('  ')} ({baseName.toLowerCase()})</p>
+                <p>
+                  ={' '}
+                  {exampleDigits
+                    .map((d, i) => `${digitToDisplay(d)}×${base}${superscript(exampleDigits.length - 1 - i)}`)
+                    .join(' + ')}
+                </p>
+                <p>
+                  ={' '}
+                  {exampleDigits
+                    .map((d, i) => d * Math.pow(base, exampleDigits.length - 1 - i))
+                    .join(' + ')}
+                </p>
+                <p>
+                  = <strong>{exampleDecimal}</strong> (decimal)
+                </p>
+              </div>
+              <p>
+                With <strong>{digitCount} digits</strong> in base {base}, you can represent values
+                from <strong>0</strong> to{' '}
+                <strong>{(Math.pow(base, digitCount) - 1).toLocaleString()}</strong>{' '}
+                ({Math.pow(base, digitCount).toLocaleString()} unique values).
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'converter' && (
+        <DivisionConverter key={base} base={base} />
+      )}
+
+      {activeTab === 'arithmetic' && (
+        <BaseArithmetic key={base} base={base} />
+      )}
 
       {/* Quiz Section */}
+      {activeTab === 'quiz' && (
       <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold text-gray-900">Practice Quiz</h2>
@@ -475,6 +510,7 @@ export default function NumberBases() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
