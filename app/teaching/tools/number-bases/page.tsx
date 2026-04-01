@@ -362,6 +362,9 @@ export default function NumberBases() {
       {/* Decimal-to-Base Division Converter */}
       <DivisionConverter key={base} base={base} />
 
+      {/* Base Arithmetic */}
+      <BaseArithmetic key={base} base={base} />
+
       {/* Quiz Section */}
       <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8">
         <div className="flex items-center justify-between mb-6">
@@ -677,6 +680,467 @@ function DivisionConverter({ base }: { base: number }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function BaseArithmetic({ base }: { base: number }) {
+  const baseName = BASE_NAMES[base] ?? `Base-${base}`;
+  const digitUnit = base === 2 ? 'bits' : 'digits';
+  const digitCountOptions = base === 2 ? [4, 8] : base <= 10 ? [3, 4] : [2, 4];
+  const defaultCount = digitCountOptions[digitCountOptions.length - 1];
+
+  const [operation, setOperation] = useState<'add' | 'subtract'>('add');
+  const [digitCount, setDigitCount] = useState(defaultCount);
+  const [digitsA, setDigitsA] = useState<number[]>(() => Array(defaultCount).fill(0));
+  const [digitsB, setDigitsB] = useState<number[]>(() => Array(defaultCount).fill(0));
+  const [stepIndex, setStepIndex] = useState(-1);
+
+  const computation = useMemo(() => {
+    const carries: number[] = Array(digitCount + 1).fill(0);
+    const resultDigits: number[] = Array(digitCount).fill(0);
+
+    for (let pos = 0; pos < digitCount; pos++) {
+      const idx = digitCount - 1 - pos;
+      if (operation === 'add') {
+        const sum = digitsA[idx] + digitsB[idx] + carries[pos];
+        resultDigits[idx] = sum % base;
+        carries[pos + 1] = Math.floor(sum / base);
+      } else {
+        const diff = digitsA[idx] - digitsB[idx] - carries[pos];
+        if (diff < 0) {
+          resultDigits[idx] = diff + base;
+          carries[pos + 1] = 1;
+        } else {
+          resultDigits[idx] = diff;
+          carries[pos + 1] = 0;
+        }
+      }
+    }
+
+    const toDecimal = (digits: number[]) =>
+      digits.reduce((acc, d, i) => acc + d * Math.pow(base, digits.length - 1 - i), 0);
+
+    return {
+      carries,
+      resultDigits,
+      overflow: carries[digitCount] === 1,
+      decA: toDecimal(digitsA),
+      decB: toDecimal(digitsB),
+      decResult: toDecimal(resultDigits),
+    };
+  }, [digitsA, digitsB, operation, digitCount, base]);
+
+  const isSetup = stepIndex === -1;
+  const isDone = stepIndex >= digitCount;
+
+  const handleDigitCountChange = (count: number) => {
+    setDigitCount(count);
+    setDigitsA(Array(count).fill(0));
+    setDigitsB(Array(count).fill(0));
+    setStepIndex(-1);
+  };
+
+  const changeDigitA = (i: number, delta: number) => {
+    if (!isSetup) return;
+    setDigitsA(prev => { const n = [...prev]; n[i] = (n[i] + delta + base) % base; return n; });
+  };
+
+  const changeDigitB = (i: number, delta: number) => {
+    if (!isSetup) return;
+    setDigitsB(prev => { const n = [...prev]; n[i] = (n[i] + delta + base) % base; return n; });
+  };
+
+  const handleRandom = () => {
+    const gen = () => Array.from({ length: digitCount }, () => Math.floor(Math.random() * base));
+    setDigitsA(gen());
+    setDigitsB(gen());
+    setStepIndex(-1);
+  };
+
+  const handleClear = () => {
+    setDigitsA(Array(digitCount).fill(0));
+    setDigitsB(Array(digitCount).fill(0));
+    setStepIndex(-1);
+  };
+
+  const switchOperation = (op: 'add' | 'subtract') => {
+    setOperation(op);
+    setStepIndex(-1);
+  };
+
+  const isColumnVisible = (arrayIdx: number) => {
+    const pos = digitCount - 1 - arrayIdx;
+    return isDone || stepIndex >= pos;
+  };
+
+  const isColumnActive = (arrayIdx: number) => {
+    const pos = digitCount - 1 - arrayIdx;
+    return !isSetup && !isDone && stepIndex === pos;
+  };
+
+  const isCarryVisible = (arrayIdx: number) => {
+    const pos = digitCount - 1 - arrayIdx;
+    return !isSetup && (isDone || stepIndex >= pos);
+  };
+
+  const digitBg = (digit: number): React.CSSProperties | undefined => {
+    if (digit === 0) return undefined;
+    const intensity = base === 2 ? 1 : 0.15 + (digit / (base - 1)) * 0.85;
+    return { backgroundColor: `rgba(17, 24, 39, ${intensity})` };
+  };
+
+  const maxValue = Math.pow(base, digitCount) - 1;
+
+  const renderOperandRow = (
+    label: string,
+    digits: number[],
+    decimalValue: number,
+    onChange: (i: number, delta: number) => void,
+    showOperator?: boolean,
+  ) => (
+    <div className="flex items-start">
+      <div className="w-14 sm:w-16 shrink-0 text-right pr-2 flex flex-col items-end justify-center">
+        {isSetup && base > 2 && <div className="h-5" />}
+        <div className="h-8 sm:h-10 flex items-center">
+          {showOperator ? (
+            <span className="text-lg font-bold text-gray-900">
+              {operation === 'add' ? '+' : '−'}
+            </span>
+          ) : (
+            <span className="text-sm font-medium text-gray-500">{label}</span>
+          )}
+        </div>
+      </div>
+      <div className="flex gap-1">
+        {digits.map((digit, i) => (
+          <div key={i} className="flex flex-col items-center">
+            {isSetup && base > 2 && (
+              <button
+                onClick={() => onChange(i, 1)}
+                className="w-8 h-5 sm:w-10 flex items-center justify-center text-gray-300 hover:text-gray-700 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={() => onChange(i, 1)}
+              disabled={!isSetup}
+              className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-md text-lg sm:text-xl font-bold font-mono transition-all duration-200 ${
+                isColumnActive(i) ? 'ring-2 ring-blue-400 scale-105' : ''
+              } ${
+                digit > 0
+                  ? 'text-white'
+                  : 'bg-white border-2 border-gray-300 text-gray-400'
+              } ${isSetup ? 'cursor-pointer hover:scale-105' : 'cursor-default'}`}
+              style={digitBg(digit)}
+            >
+              {digitToDisplay(digit)}
+            </button>
+            {isSetup && base > 2 && (
+              <button
+                onClick={() => onChange(i, -1)}
+                className="w-8 h-5 sm:w-10 flex items-center justify-center text-gray-300 hover:text-gray-700 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="w-16 sm:w-20 shrink-0 text-left pl-2 flex flex-col items-start justify-center">
+        {isSetup && base > 2 && <div className="h-5" />}
+        <div className="h-8 sm:h-10 flex items-center text-xs sm:text-sm text-gray-400 font-mono">
+          {base !== 10 ? `= ${decimalValue}` : ''}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 mb-12">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-2">{baseName} Arithmetic</h2>
+      <p className="text-gray-600 mb-6">
+        Practice {baseName.toLowerCase()} addition and subtraction step by step.
+        {base === 2 ? ' Toggle' : ' Adjust'} digits to set two operands, choose an operation,
+        then step through the computation column by column to see how
+        carries and borrows work{base !== 10 ? ` in base ${base}` : ''}.
+      </p>
+
+      <div className="flex flex-wrap gap-6 mb-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Operation</label>
+          <div className="flex gap-2">
+            {(['add', 'subtract'] as const).map(op => (
+              <button
+                key={op}
+                onClick={() => switchOperation(op)}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  operation === op
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {op === 'add' ? '+ Addition' : '− Subtraction'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {base === 2 ? 'Bits' : 'Digits'}
+          </label>
+          <div className="flex gap-2">
+            {digitCountOptions.map(n => (
+              <button
+                key={n}
+                onClick={() => handleDigitCountChange(n)}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  digitCount === n
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {n} {digitUnit}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 mb-6 overflow-x-auto">
+        <div className="flex flex-col items-center gap-1 min-w-fit">
+
+          {!isSetup && (
+            <div className="flex items-center">
+              <div className="w-14 sm:w-16 shrink-0 text-right pr-2 text-xs text-gray-400">
+                {operation === 'add' ? 'Carry' : 'Borrow'}
+              </div>
+              <div className="flex gap-1">
+                {digitsA.map((_, i) => {
+                  const pos = digitCount - 1 - i;
+                  const carry = computation.carries[pos];
+                  const visible = isCarryVisible(i);
+                  return (
+                    <div
+                      key={i}
+                      className={`w-8 h-6 sm:w-10 sm:h-6 flex items-center justify-center text-xs sm:text-sm font-mono font-bold transition-all duration-300 ${
+                        visible && carry > 0
+                          ? 'text-red-500'
+                          : visible
+                            ? 'text-gray-300'
+                            : 'text-transparent'
+                      }`}
+                    >
+                      {visible ? carry : '\u00A0'}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="w-16 sm:w-20 shrink-0" />
+            </div>
+          )}
+
+          {renderOperandRow('A', digitsA, computation.decA, changeDigitA)}
+          {renderOperandRow('B', digitsB, computation.decB, changeDigitB, true)}
+
+          <div className="flex items-center">
+            <div className="w-14 sm:w-16 shrink-0" />
+            <div className="flex gap-1">
+              {Array.from({ length: digitCount }).map((_, i) => (
+                <div key={i} className="w-8 sm:w-10 border-t-2 border-gray-400" />
+              ))}
+            </div>
+            <div className="w-16 sm:w-20 shrink-0" />
+          </div>
+
+          <div className="flex items-center">
+            <div className="w-14 sm:w-16 shrink-0 text-right pr-1">
+              {isDone && computation.overflow && operation === 'add' && (
+                <span className="text-amber-600 font-bold font-mono text-lg">1</span>
+              )}
+            </div>
+            <div className="flex gap-1">
+              {computation.resultDigits.map((digit, i) => {
+                const visible = isColumnVisible(i);
+                const active = isColumnActive(i);
+                return (
+                  <div
+                    key={i}
+                    className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-md text-lg sm:text-xl font-bold font-mono transition-all duration-300 ${
+                      !visible
+                        ? 'bg-gray-200 text-gray-300'
+                        : active
+                          ? 'bg-blue-600 text-white ring-2 ring-blue-400 scale-105'
+                          : digit > 0
+                            ? `text-white ${isDone ? 'shadow-md' : 'opacity-90'}`
+                            : 'bg-white border-2 border-gray-300 text-gray-400'
+                    }`}
+                    style={visible && !active && digit > 0 ? digitBg(digit) : undefined}
+                  >
+                    {visible ? digitToDisplay(digit) : '?'}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="w-16 sm:w-20 shrink-0 text-left pl-2 text-xs sm:text-sm text-gray-400 font-mono">
+              {isDone && base !== 10 ? `= ${computation.decResult}` : ''}
+            </div>
+          </div>
+        </div>
+
+        {isDone && computation.overflow && (
+          <div className="mt-4 text-center">
+            <span className={`inline-block px-3 py-1.5 rounded-full text-sm font-medium ${
+              operation === 'add'
+                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                : 'bg-red-50 text-red-700 border border-red-200'
+            }`}>
+              {operation === 'add'
+                ? `Overflow: ${computation.decA} + ${computation.decB} = ${computation.decA + computation.decB}, which exceeds ${maxValue.toLocaleString()} (max for ${digitCount} ${digitUnit})`
+                : `Underflow: ${computation.decA} − ${computation.decB} is negative — the result wraps around`
+              }
+            </span>
+          </div>
+        )}
+
+        {isDone && !computation.overflow && (
+          <div className="mt-4 text-center text-sm text-gray-500 font-mono">
+            {computation.decA} {operation === 'add' ? '+' : '−'} {computation.decB} ={' '}
+            {operation === 'add' ? computation.decA + computation.decB : computation.decA - computation.decB} ✓
+          </div>
+        )}
+
+        {!isSetup && !isDone && stepIndex >= 0 && stepIndex < digitCount && (
+          <div className="mt-4 text-center text-sm text-gray-600 bg-white rounded-lg p-3 border border-gray-200">
+            {(() => {
+              const pos = stepIndex;
+              const idx = digitCount - 1 - pos;
+              const a = digitsA[idx];
+              const b = digitsB[idx];
+              const carryIn = computation.carries[pos];
+              const result = computation.resultDigits[idx];
+              const carryOut = computation.carries[pos + 1];
+
+              if (operation === 'add') {
+                const sum = a + b + carryIn;
+                return (
+                  <>
+                    <span className="font-medium">Column {pos}</span>
+                    <span className="text-gray-400"> ({base}{superscript(pos)} place)</span>
+                    {': '}
+                    <span className="font-mono">{digitToDisplay(a)} + {digitToDisplay(b)} + {carryIn}</span>
+                    <span className="text-gray-400"> (carry in)</span>
+                    <span className="font-mono"> = {sum}</span>
+                    {' → write '}
+                    <strong className="font-mono">{digitToDisplay(result)}</strong>
+                    {carryOut > 0 && base > 2 && (
+                      <span className="text-gray-400"> ({sum} mod {base})</span>
+                    )}
+                    {', carry '}
+                    <strong className={`font-mono ${carryOut > 0 ? 'text-red-500' : ''}`}>{carryOut}</strong>
+                    {carryOut > 0 && base > 2 && (
+                      <span className="text-gray-400"> (⌊{sum} ÷ {base}⌋)</span>
+                    )}
+                  </>
+                );
+              } else {
+                const rawDiff = a - b - carryIn;
+                return (
+                  <>
+                    <span className="font-medium">Column {pos}</span>
+                    <span className="text-gray-400"> ({base}{superscript(pos)} place)</span>
+                    {': '}
+                    <span className="font-mono">{digitToDisplay(a)} − {digitToDisplay(b)} − {carryIn}</span>
+                    <span className="text-gray-400"> (borrow in)</span>
+                    <span className="font-mono"> = {rawDiff}</span>
+                    {rawDiff < 0 ? (
+                      <span className="font-mono"> → borrow: {rawDiff} + {base} = {digitToDisplay(result)}</span>
+                    ) : (
+                      <span className="font-mono"> → {digitToDisplay(result)}</span>
+                    )}
+                    {', borrow '}
+                    <strong className={`font-mono ${carryOut > 0 ? 'text-red-500' : ''}`}>{carryOut}</strong>
+                  </>
+                );
+              }
+            })()}
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-3">
+        {isSetup ? (
+          <>
+            <button
+              onClick={() => setStepIndex(0)}
+              className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            >
+              Step by Step
+            </button>
+            <button
+              onClick={() => setStepIndex(digitCount)}
+              className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            >
+              Show Result
+            </button>
+            <button
+              onClick={handleRandom}
+              className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+            >
+              Random
+            </button>
+            {(digitsA.some(d => d > 0) || digitsB.some(d => d > 0)) && (
+              <button
+                onClick={handleClear}
+                className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+              >
+                Clear
+              </button>
+            )}
+          </>
+        ) : isDone ? (
+          <>
+            <button
+              onClick={() => setStepIndex(-1)}
+              className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={handleRandom}
+              className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+            >
+              New Random
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => setStepIndex(prev => prev + 1)}
+              className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            >
+              Next Step
+            </button>
+            <button
+              onClick={() => setStepIndex(digitCount)}
+              className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+            >
+              Show All
+            </button>
+            <button
+              onClick={() => setStepIndex(-1)}
+              className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+            >
+              Reset
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
