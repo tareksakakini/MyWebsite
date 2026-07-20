@@ -12,6 +12,17 @@ const tools = [
       </svg>
     ),
   },
+  {
+    title: 'Logic Gates',
+    description:
+      'Flip inputs on logic gates (AND, OR, NOT, NAND, NOR, XOR, XNOR) and watch outputs light up. Evaluate boolean expressions step by step and practice with a quiz.',
+    href: '/teaching/tools/logic-gates',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h3m0 0v10m0-10a3 3 0 013-3h2a6 6 0 016 6v0a6 6 0 01-6 6h-2a3 3 0 01-3-3m13-3h3M7 10H4m3 4H4" />
+      </svg>
+    ),
+  },
 ];
 
 export default function TeachingTools() {

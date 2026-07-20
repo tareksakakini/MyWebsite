@@ -114,6 +114,42 @@ export default function Research() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
+                <p className="text-gray-600">Conference on Neural Information Processing Systems (NeurIPS)</p>
+              </div>
+              <span className="text-sm text-gray-500">2026</span>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
+                <p className="text-gray-600">Conference on Empirical Methods in Natural Language Processing (EMNLP)</p>
+              </div>
+              <span className="text-sm text-gray-500">2026</span>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
+                <p className="text-gray-600">Conference on Language Modeling (COLM)</p>
+              </div>
+              <span className="text-sm text-gray-500">2026</span>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
+                <p className="text-gray-600">Annual Meeting of the Association for Computational Linguistics (ACL)</p>
+              </div>
+              <span className="text-sm text-gray-500">2026</span>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
                 <p className="text-gray-600">International Conference on Learning Representations (ICLR)</p>
               </div>
               <span className="text-sm text-gray-500">2026</span>
@@ -135,6 +171,24 @@ export default function Research() {
                 <p className="text-gray-600">ACL Rolling Review</p>
               </div>
               <span className="text-sm text-gray-500">January 2026</span>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
+                <p className="text-gray-600">Conference on Language Modeling (COLM)</p>
+              </div>
+              <span className="text-sm text-gray-500">2025</span>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
+                <p className="text-gray-600">International Conference on Machine Learning (ICML)</p>
+              </div>
+              <span className="text-sm text-gray-500">2025</span>
             </div>
           </div>
         </div>
