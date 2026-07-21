@@ -34,6 +34,28 @@ export default function Research() {
     }
   ];
 
+  const reviewingService = [
+    {
+      year: "2026",
+      venues: [
+        { abbr: "NeurIPS", full: "Conference on Neural Information Processing Systems" },
+        { abbr: "EMNLP", full: "Conference on Empirical Methods in Natural Language Processing" },
+        { abbr: "COLM", full: "Conference on Language Modeling" },
+        { abbr: "ACL", full: "Annual Meeting of the Association for Computational Linguistics" },
+        { abbr: "ICLR", full: "International Conference on Learning Representations" },
+        { abbr: "EACL", full: "European Chapter of the Association for Computational Linguistics" },
+        { abbr: "ARR", full: "ACL Rolling Review (January 2026)" }
+      ]
+    },
+    {
+      year: "2025",
+      venues: [
+        { abbr: "COLM", full: "Conference on Language Modeling" },
+        { abbr: "ICML", full: "International Conference on Machine Learning" }
+      ]
+    }
+  ];
+
   const researchAreas = [
     { name: "Large Language Models and Agentic AI", type: "current" },
     { name: "Morphological Analysis", type: "past" },
@@ -109,87 +131,25 @@ export default function Research() {
       {/* Community Service */}
       <div className="mb-16">
         <h2 className="text-2xl font-semibold text-gray-900 mb-8">Community Service</h2>
-        <div className="space-y-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">Conference on Neural Information Processing Systems (NeurIPS)</p>
+        <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Reviewer</h3>
+          <div className="space-y-3">
+            {reviewingService.map((group) => (
+              <div key={group.year} className="flex items-start">
+                <span className="text-sm font-medium text-gray-500 w-14 shrink-0 mt-1">{group.year}</span>
+                <div className="flex flex-wrap gap-2">
+                  {group.venues.map((venue) => (
+                    <span
+                      key={venue.abbr}
+                      title={venue.full}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full cursor-default"
+                    >
+                      {venue.abbr}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <span className="text-sm text-gray-500">2026</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">Conference on Empirical Methods in Natural Language Processing (EMNLP)</p>
-              </div>
-              <span className="text-sm text-gray-500">2026</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">Conference on Language Modeling (COLM)</p>
-              </div>
-              <span className="text-sm text-gray-500">2026</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">Annual Meeting of the Association for Computational Linguistics (ACL)</p>
-              </div>
-              <span className="text-sm text-gray-500">2026</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">International Conference on Learning Representations (ICLR)</p>
-              </div>
-              <span className="text-sm text-gray-500">2026</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">European Chapter of the Association for Computational Linguistics (EACL)</p>
-              </div>
-              <span className="text-sm text-gray-500">2026</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">ACL Rolling Review</p>
-              </div>
-              <span className="text-sm text-gray-500">January 2026</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">Conference on Language Modeling (COLM)</p>
-              </div>
-              <span className="text-sm text-gray-500">2025</span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reviewer</h3>
-                <p className="text-gray-600">International Conference on Machine Learning (ICML)</p>
-              </div>
-              <span className="text-sm text-gray-500">2025</span>
-            </div>
+            ))}
           </div>
         </div>
       </div>
